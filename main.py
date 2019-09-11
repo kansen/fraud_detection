@@ -1,8 +1,20 @@
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
-import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import roc_curve, roc_auc_score, classification_report, accuracy_score, confusion_matrix
 
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Read the CSV file
+data = pd.read_csv('./data/creditcard.csv')
+
+# Show the contents
+print(data)
+
+print(data.describe())
 
 def normalize(X):
     """
@@ -12,13 +24,6 @@ def normalize(X):
         X[feature] -= X[feature].mean()
         X[feature] /= X[feature].std()
     return X
-
-
-
-# Read the CSV file
-data = pd.read_csv('./data/creditcard.csv')
-
-print(data)
 
 # Only use the 'Amount' and 'V1', ..., 'V28' features
 features = ['Amount'] + ['V%d' % number for number in range(1, 29)]
@@ -52,3 +57,8 @@ for train_indices, test_indices in splitter.split(X, y):
 
     # And finally: show the results
     print(classification_report(y_test, y_pred))
+
+    f, ax = plt.subplots(figsize=(7, 5))
+    sns.countplot(x='Class', data=data)
+    _ = plt.title('# Fraud vs NonFraud')
+    _ = plt.xlabel('Class (1==Fraud)')
